@@ -56,6 +56,8 @@ class GymComment(models.Model):
 
 class Follow(models.Model):
     id_follow = models.AutoField(primary_key=True)
+    follower_open_id = models.CharField(max_length=50, default='default')
+    followed_open_id = models.CharField(max_length=50, default='default')
     follower = models.ForeignKey('Account', related_name='follower_account', on_delete=models.CASCADE)
     followed = models.ForeignKey('Account',  related_name='followed_account',on_delete=models.CASCADE)
     invite_num = models.IntegerField()
