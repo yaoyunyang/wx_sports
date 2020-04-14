@@ -4,9 +4,10 @@ from django.db import models
 
 
 class Account(models.Model):
-    id_account = models.CharField(max_length=50, primary_key=True)
+    id_account = models.AutoField(primary_key=True)
+    open_id = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
-    gender = models.IntegerField(default=0)
+    gender = models.IntegerField(default=0, blank=True)
     age = models.IntegerField(default=0)
     profile = models.CharField(max_length=255, blank=True)
     state = models.IntegerField(default=0)
@@ -15,7 +16,8 @@ class Account(models.Model):
 class Invitation(models.Model):
     id_invitation = models.AutoField(primary_key=True)
     inviter_id_account = models.ForeignKey('Account', on_delete=models.CASCADE)
-    gym_id_gum = models.ForeignKey('Gym', on_delete=models.CASCADE)
+    inviter_open_id = models.CharField(max_length=50)
+    gym_id_gym = models.ForeignKey('Gym', on_delete=models.CASCADE)
     sports_type = models.IntegerField()
     deadline = models.DateTimeField()
     begin_time = models.DateTimeField()
@@ -29,10 +31,10 @@ class Invitation(models.Model):
 class Gym(models.Model):
     id_gym = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    heat = models.IntegerField(default=100)
+    heat = models.IntegerField(default=100, blank=True)
     time = models.CharField(max_length=50, blank=True)
     charge = models.CharField(max_length=50, blank=True)
-    peak_time = models.CharField(max_length=50, default='16:00-18:00')
+    peak_time = models.CharField(max_length=50, default='16:00-18:00', blank=True)
 
 
 class Message(models.Model):
