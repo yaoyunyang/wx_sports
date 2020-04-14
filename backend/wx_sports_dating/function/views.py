@@ -40,6 +40,19 @@ def release_invitation(request):
     invitation_id = models.Invitation.objects.filter(inviter_open_id='asdf123').last().id_invitation
 
     response_data = {
-        "invitation_id": invitation_id,
+        "invitation_id": invitation_id
     }
     return JsonResponse(response_data)
+
+
+def get_my_follows(request):
+    data = json.loads(request.body)
+    open_id = data['open_id']
+    followed_list = models.Follow.objects.filter(follower_open_id=open_id)
+    response_data = []
+    for e in followed_list:
+        id_account = e.followed_id
+        account_info = list(models.Account.objects.filter(id_account=id_account).values())
+        response_data.extend(account_info)
+    print(response_data)
+    return JsonResponse(response_data, safe=False)
