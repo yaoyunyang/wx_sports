@@ -101,3 +101,21 @@ def send_message(request):
     }
 
     return JsonResponse(response_data)
+
+
+def gym_is_exist(request):
+    data = json.loads(request.body)
+    longitude = data['longitude']
+    latitude = data['latitude']
+    is_exist = models.Gym.objects.filter(longitude=longitude, latitude=latitude)
+    if is_exist:
+        state_code = 200
+    else:
+        state_code = 501
+
+    response_data = {
+        "state_code": state_code
+    }
+
+    return JsonResponse(response_data)
+
