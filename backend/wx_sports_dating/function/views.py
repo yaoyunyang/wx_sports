@@ -37,7 +37,7 @@ def release_invitation(request):
     invitation.save()
 
     # 获取用户刚才创建的邀请ID， 即该用户的最新一条邀请
-    invitation_id = models.Invitation.objects.filter(inviter_open_id='asdf123').last().id_invitation
+    invitation_id = models.Invitation.objects.filter(inviter_open_id=inviter_open_id).last().id_invitation
 
     response_data = {
         "invitation_id": invitation_id
