@@ -74,3 +74,4 @@ def evaluate_gym(request):
         "state_code": 200
     }
     return JsonResponse(response_data)
+
