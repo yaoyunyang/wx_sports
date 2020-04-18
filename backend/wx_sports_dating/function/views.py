@@ -37,7 +37,7 @@ def release_invitation(request):
     invitation.save()
 
     # 获取用户刚才创建的邀请ID， 即该用户的最新一条邀请
-    invitation_id = models.Invitation.objects.filter(inviter_open_id='asdf123').last().id_invitation
+    invitation_id = models.Invitation.objects.filter(inviter_open_id=inviter_open_id).last().id_invitation
 
     response_data = {
         "invitation_id": invitation_id
@@ -56,3 +56,21 @@ def get_my_follows(request):
         response_data.extend(account_info)
     print(response_data)
     return JsonResponse(response_data, safe=False)
+
+
+def evaluate_gym(request):
+    data = json.loads(request.body)
+    open_id = data['open_id']
+    account_id_account = models.Account.objects.get(open_id=open_id)
+    comment = data['comment']
+    gym_id_gym = models.Gym.objects.get(id_gym=data['id_gym'])
+    gym_comment = models.GymComment(
+        account_id_account=account_id_account,
+        gym_id_gym=gym_id_gym,
+        comment=comment
+    )
+    gym_comment.save()
+    response_data={
+        "state_code": 200
+    }
+    return JsonResponse(response_data)
