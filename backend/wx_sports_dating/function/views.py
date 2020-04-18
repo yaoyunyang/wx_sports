@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import json
 from . import models
-
+import time
 
 # Create your views here.
 
@@ -70,8 +70,34 @@ def evaluate_gym(request):
         comment=comment
     )
     gym_comment.save()
-    response_data={
+    response_data = {
         "state_code": 200
     }
     return JsonResponse(response_data)
 
+
+def send_message(request):
+    data = json.loads(request.body)
+    receiver_id = data['receiver_open_id']
+    content = data['content']
+    sender_id = data['sender_open_id']
+    state = data['state']
+    type = data['type']
+    title = data['title']
+    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    message = models.Message(
+        content=content,
+        datetime=datetime,
+        type=type,
+        state=state,
+        receiver_id=receiver_id,
+        sender_id=sender_id,
+        title=title
+    )
+    message.save()
+    response_data = {
+        "state_code": 200
+    }
+
+    return JsonResponse(response_data)
