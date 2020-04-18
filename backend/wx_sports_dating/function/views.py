@@ -118,4 +118,3 @@ def gym_is_exist(request):
     }
 
     return JsonResponse(response_data)
-
