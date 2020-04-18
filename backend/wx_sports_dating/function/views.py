@@ -71,7 +71,7 @@ def evaluate_gym(request):
     )
     gym_comment.save()
     response_data = {
-        "state_code": 200
+        "status_code": 200
     }
     return JsonResponse(response_data)
 
@@ -97,7 +97,7 @@ def send_message(request):
     )
     message.save()
     response_data = {
-        "state_code": 200
+        "status_code": 200
     }
 
     return JsonResponse(response_data)
@@ -109,13 +109,12 @@ def gym_is_exist(request):
     latitude = data['latitude']
     is_exist = models.Gym.objects.filter(longitude=longitude, latitude=latitude)
     if is_exist:
-        state_code = 200
+        status_code = 200
     else:
-        state_code = 501
+        status_code = 501
 
     response_data = {
-        "state_code": state_code
+        "status_code": state_code
     }
 
     return JsonResponse(response_data)
-
