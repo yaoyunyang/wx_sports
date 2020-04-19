@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-import json
+import json, requests
 from . import models
 import time
-
+import hashlib
 # Create your views here.
 
 
@@ -118,3 +118,39 @@ def gym_is_exist(request):
     }
 
     return JsonResponse(response_data)
+
+
+def login(request):
+    js_code = request.GET.get('code')
+    url = 'https://api.weixin.qq.com/sns/jscode2session'
+    params = {
+        'appid': 'wxe9e1e6704355a9ac',
+        'secret': 'bcd537cb2b62e735d3c7f50dc6deb953',
+        'js_code': js_code,
+        'grant_type': 'authorization_code'
+    }
+
+    response = requests.get(url=url, params=params)
+    if response.json()['session_key']:
+        print(response.json())
+        md5 = hashlib.md5()
+        open_id = response.json()['openid']
+        session_key = response.json()['session_key']
+        hash_str = open_id + session_key
+        md5.update(hash_str.encode('utf-8'))
+        login = models.Login(
+            open_id=open_id,
+            session_key=session_key,
+            hash_id=md5.hexdigest()
+        )
+        login.save()
+        response_data = {
+            'hash_session': md5.hexdigest()
+        }
+        return JsonResponse(response_data)
+    else:
+        response_data = {
+            'status_code': 501
+        }
+
+        return JsonResponse(response_data)

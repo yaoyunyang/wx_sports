@@ -71,3 +71,10 @@ class Responder(models.Model):
     invitation_id_invitation = models.ForeignKey('Invitation', on_delete=models.CASCADE)
     account_id_account = models.ForeignKey('Account', on_delete=models.CASCADE)
     state = models.IntegerField()
+
+
+class Login(models.Model):
+    open_id = models.CharField(max_length=50)
+    session_key = models.CharField(max_length=50)
+    hash_id = models.CharField(max_length=50)
+    login_date = models.DateTimeField(auto_now_add=True)
