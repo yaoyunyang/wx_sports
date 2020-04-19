@@ -114,7 +114,7 @@ def gym_is_exist(request):
         status_code = 501
 
     response_data = {
-        "status_code": state_code
+        "status_code": status_code
     }
 
     return JsonResponse(response_data)
