@@ -7,5 +7,6 @@ urlpatterns = [
     path('evaluate_gym', views.evaluate_gym),
     path('send_message', views.send_message),
     path('gym_is_exist', views.gym_is_exist),
-    path('login', views.login)
+    path('login', views.login),
+    path('store_info', views.store_info)
 ]
