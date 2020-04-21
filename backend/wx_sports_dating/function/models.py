@@ -11,6 +11,7 @@ class Account(models.Model):
     age = models.IntegerField(default=0)
     profile = models.CharField(max_length=255, blank=True)
     state = models.IntegerField(default=0)
+    favor_sports = models.CharField(max_length=255, default="")
 
 
 class Invitation(models.Model):

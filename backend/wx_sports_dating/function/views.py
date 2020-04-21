@@ -191,3 +191,26 @@ def store_info(request):
         'status_code': 200
     }
     return JsonResponse(response_data)
+
+
+def modify_info(request):
+    data = json.loads(request.body)
+    age = data['age']
+    profile = data['profile']
+    favor_sports = data['favor_sports']
+    hash_id = data['hash_session']
+    open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+    account = models.Account.objects.get(open_id=open_id)
+    if account:
+        account.age = age
+        account.profile = profile
+        account.favor_sports = favor_sports
+        account.save()
+        status_code = 200
+    else:
+        status_code = 501
+
+    response_data = {
+        "status_code": status_code
+    }
+    return JsonResponse(response_data)
