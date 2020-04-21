@@ -62,14 +62,14 @@ class Follow(models.Model):
     follower_open_id = models.CharField(max_length=50, default='default')
     followed_open_id = models.CharField(max_length=50, default='default')
     follower = models.ForeignKey('Account', related_name='follower_account', on_delete=models.CASCADE)
-    followed = models.ForeignKey('Account',  related_name='followed_account',on_delete=models.CASCADE)
+    followed = models.ForeignKey('Account',  related_name='followed_account', on_delete=models.CASCADE)
     invite_num = models.IntegerField()
 
 
 class Responder(models.Model):
     id_responder = models.AutoField(primary_key=True)
     invitation_id_invitation = models.ForeignKey('Invitation', on_delete=models.CASCADE)
-    account_id_account = models.ForeignKey('Account', on_delete=models.CASCADE)
+    account_id_account = models.ForeignKey('Account', related_name='invitation', on_delete=models.CASCADE)
     state = models.IntegerField()
 
 
