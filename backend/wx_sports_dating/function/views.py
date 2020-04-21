@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from django.core import serializers
-import json
+import json, requests
 from . import models
 import time
 import hashlib
@@ -180,31 +179,3 @@ def store_info(request):
         'status_code': 200
     }
     return JsonResponse(response_data)
-
-
-def get_account_info(request):
-    response = {}
-    try:
-        open_id = request.GET.get('open_id')
-        account = models.Account.objects.filter(open_id=open_id).first()
-        response['list'] = json.loads(serializers.serialize("json", account))
-        response['status'] = 200
-    except Exception as exception:
-        response['msg'] = str(exception)
-        response['status'] = 501
-
-    return JsonResponse(response)
-
-
-def get_my_invitation(request):
-    response = {}
-    try:
-        open_id = request.GET.get('open_id')
-        invitation = models.Invitation.objects.filter(inviter_open_id=open_id)
-        response['list'] = json.loads(serializers.serialize("json", invitation))
-        response['status'] = 200
-    except Exception as exception:
-        response['msg'] = str(exception)
-        response['status'] = 501
-
-    return JsonResponse(response)
