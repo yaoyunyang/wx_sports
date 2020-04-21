@@ -109,13 +109,24 @@ def gym_is_exist(request):
     latitude = data['latitude']
     is_exist = models.Gym.objects.filter(longitude=longitude, latitude=latitude)
     if is_exist:
-        status_code = 200
+        gym = models.Gym.objects.filter(longitude=longitude, latitude=latitude).last()
+        response_data = {
+            "status_code": 200,
+            "gym_info": {
+                "p_key": gym.id_gym,
+                "name": gym.name,
+                "heat": gym.heat,
+                "charge": gym.charge,
+                "peak_time": gym.peak_time,
+                "time": gym.time,
+                "brief_introduction": gym.brief_introduction
+            }
+        }
     else:
         status_code = 501
-
-    response_data = {
-        "status_code": status_code
-    }
+        response_data = {
+            "status_code": status_code
+        }
 
     return JsonResponse(response_data)
 
