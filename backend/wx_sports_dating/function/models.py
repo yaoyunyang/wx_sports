@@ -37,6 +37,7 @@ class Gym(models.Model):
     peak_time = models.CharField(max_length=50, default='16:00-18:00', blank=True)
     longitude = models.CharField(max_length=50, default='1')
     latitude = models.CharField(max_length=50, default='1')
+    brief_introduction = models.CharField(max_length=225, default="")
 
 
 class Message(models.Model):
