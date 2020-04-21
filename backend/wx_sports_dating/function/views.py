@@ -199,7 +199,7 @@ def get_account_info(request):
 def get_my_invitation(request):
     response = {}
     try:
-        open_id = request.GET.get('open_id').first()
+        open_id = request.GET.get('open_id')
         invitation = models.Invitation.objects.filter(inviter_open_id=open_id)
         response['list'] = json.loads(serializers.serialize("json", invitation))
         response['status'] = 200
