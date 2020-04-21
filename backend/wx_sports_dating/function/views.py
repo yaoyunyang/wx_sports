@@ -123,6 +123,7 @@ def gym_is_exist(request):
 def login(request):
     js_code = request.GET.get('code')
     url = 'https://api.weixin.qq.com/sns/jscode2session'
+    # 需要更改为前端的appid 和 secret
     params = {
         'appid': 'wxe9e1e6704355a9ac',
         'secret': 'bcd537cb2b62e735d3c7f50dc6deb953',
@@ -161,7 +162,7 @@ def store_info(request):
     hash_id = data['hash_session']
     name = data['name']
     gender = data['gender']
-    open_id = models.Login.objects.filter(hash_id=hash_id).get().open_id
+    open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
     is_exist = models.Account.objects.filter(open_id=open_id)
     if is_exist:
         account = models.Account.objects.get(open_id=open_id)
