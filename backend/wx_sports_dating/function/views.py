@@ -229,9 +229,9 @@ def respond_list(request):
     response_data = {}
     try:
         data = json.loads(request.body)
-        p_key = data['p_key']
+        gym_id = data['gym_id']
         invitations_list = []
-        invitations = models.Invitation.objects.filter(gym_id_gym_id=p_key)
+        invitations = models.Invitation.objects.filter(gym_id_gym_id=gym_id)
         for invitation in invitations:
             invitation_dic = {}
             invitation_dic['invitation_id'] = invitation.id_invitation
@@ -248,4 +248,38 @@ def respond_list(request):
     except Exception as exception:
         response_data['status_code'] = 501
         response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
+
+
+def get_invite_detail(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        invtation_id = data['invtation_id']
+        invitation = models.Invitation.objects.get(id_invitation=invtation_id)
+        invitation_dic = {}
+        invited_list = []
+        invited_one = {}
+        invitation_dic['state'] = invitation.state
+        invitation_dic['sports_type'] = invitation.sports_type
+        invitation_dic['inviter_state'] = invitation.inviter_state
+        invitation_dic['brif_introduction'] = invitation.brif_introduction
+        invitation_dic['deadline'] = invitation.deadline
+        invitation_dic['begin_time'] = invitation.begin_time
+        invitation_dic['end_time'] = invitation.end_time
+        invitation_dic['max_responsed'] = invitation.max_responsed
+        inviter_name = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().name
+        invitation_dic['inviter_name'] = inviter_name
+        has_respond = len(invitation.invitation.all())
+        for item in invitation.invitation.all():
+            account = models.Account.objects.filter(id_account=item.account_id_account_id).get()
+            invited_one['name'] = account.name
+            invited_list.append(invited_one)
+        invitation_dic['has_respond'] = has_respond
+        invitation_dic['invited_list'] = invited_list
+        response_data['detail'] = invitation_dic
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
     return JsonResponse(response_data)
