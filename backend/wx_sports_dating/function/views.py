@@ -223,3 +223,29 @@ def modify_info(request):
         response_data['status_code'] = 501
 
     return JsonResponse(response_data)
+
+
+def respond_list(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        p_key = data['p_key']
+        invitations_list = []
+        invitations = models.Invitation.objects.filter(gym_id_gym_id=p_key)
+        for invitation in invitations:
+            invitation_dic = {}
+            invitation_dic['invitation_id'] = invitation.id_invitation
+            invitation_dic['sports_type'] = invitation.sports_type
+            invitation_dic['begin_time'] = invitation.begin_time
+            invitation_dic['max_responsed'] = invitation.max_responsed
+            inviter_name = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().name
+            invitation_dic['inviter_name'] = inviter_name
+            has_respond = len(invitation.invitation.all())
+            invitation_dic['has_respond'] = has_respond
+            invitations_list.append(invitation_dic)
+        response_data['invitation_list'] = invitations_list
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
