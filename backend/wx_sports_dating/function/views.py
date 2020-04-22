@@ -201,3 +201,25 @@ def store_info(request):
         response_data['status_code'] = 501
 
     return JsonResponse(response_data)
+
+
+def modify_info(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        age = data['age']
+        profile = data['profile']
+        hash_id = data['hash_session']
+        favor_sports = data['favor_sports']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account = models.Account.objects.get(open_id=open_id)
+        account.age = age
+        account.profile = profile
+        account.favor_sports = favor_sports
+        account.save()
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+
+    return JsonResponse(response_data)

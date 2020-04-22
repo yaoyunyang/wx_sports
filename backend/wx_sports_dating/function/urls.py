@@ -12,5 +12,6 @@ urlpatterns = [
     path('get_my_invitation', views1.get_notice),
     path('gym_is_exist', views.gym_is_exist),
     path('login', views.login),
-    path('store_info', views.store_info)
+    path('store_info', views.store_info),
+    path('modify_info', views.modify_info)
 ]
