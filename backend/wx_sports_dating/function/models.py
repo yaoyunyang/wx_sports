@@ -25,8 +25,8 @@ class Invitation(models.Model):
     end_time = models.DateTimeField()
     max_responsed = models.IntegerField()
     brif_introduction = models.CharField(max_length=255)
-    state = models.IntegerField()
-    inviter_state = models.IntegerField()
+    state = models.IntegerField(default=0)
+    inviter_state = models.IntegerField(default=0)
 
 
 class Gym(models.Model):
