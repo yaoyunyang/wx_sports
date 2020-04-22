@@ -11,6 +11,7 @@ class Account(models.Model):
     age = models.IntegerField(default=0)
     profile = models.CharField(max_length=255, blank=True)
     state = models.IntegerField(default=0)
+    favor_sports = models.CharField(max_length=50, default='')
 
 
 class Invitation(models.Model):
@@ -69,8 +70,8 @@ class Follow(models.Model):
 
 class Responder(models.Model):
     id_responder = models.AutoField(primary_key=True)
-    invitation_id_invitation = models.ForeignKey('Invitation', on_delete=models.CASCADE)
-    account_id_account = models.ForeignKey('Account', related_name='invitation', on_delete=models.CASCADE)
+    invitation_id_invitation = models.ForeignKey('Invitation', related_name='invitation', on_delete=models.CASCADE)
+    account_id_account = models.ForeignKey('Account',  on_delete=models.CASCADE)
     state = models.IntegerField()
 
 
