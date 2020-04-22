@@ -169,25 +169,35 @@ def login(request):
 
 
 def store_info(request):
-    data = json.loads(request.body)
-    hash_id = data['hash_session']
-    name = data['name']
-    gender = data['gender']
-    open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
-    is_exist = models.Account.objects.filter(open_id=open_id)
-    if is_exist:
-        account = models.Account.objects.get(open_id=open_id)
-        account.name = name
-        account.gender = gender
-        account.save()
-    else:
-        account = models.Account(
-            open_id=open_id,
-            name=name,
-            gender=gender,
-        )
-        account.save()
-    response_data = {
-        'status_code': 200
-    }
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        name = data['name']
+        gender = data['gender']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        is_exist = models.Account.objects.filter(open_id=open_id)
+        if is_exist:
+            account = models.Account.objects.get(open_id=open_id)
+            account.name = name
+            account.gender = gender
+            account.save()
+        else:
+            account = models.Account(
+                open_id=open_id,
+                name=name,
+                gender=gender,
+            )
+            account.save()
+        response_data['name'] = account.name
+        response_data['gender'] = account.gender
+        response_data['profile'] = account.profile
+        response_data['age'] = account.age
+        response_data['favor_sports'] = account.favor_sports
+        response_data['state'] = account.state
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+
     return JsonResponse(response_data)
