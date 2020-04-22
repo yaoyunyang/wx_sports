@@ -17,8 +17,6 @@ def release_invitation(request):
         end_time = data['end_time']
         max_responsed = data['max_responsed']
         brif_introduction = data['brif_introduction']
-        state = data['state']
-        inviter_state = data['inviter_state']
         hash_id = data['hash_session']
         inviter_open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         gym_id_gym_id = models.Gym.objects.get(id_gym=data['id_gym'])
@@ -33,8 +31,6 @@ def release_invitation(request):
             end_time=end_time,
             max_responsed=max_responsed,
             brif_introduction=brif_introduction,
-            state=state,
-            inviter_state=inviter_state,
             inviter_open_id=inviter_open_id
         )
         invitation.save()
