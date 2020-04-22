@@ -13,5 +13,6 @@ urlpatterns = [
     path('gym_is_exist', views.gym_is_exist),
     path('login', views.login),
     path('store_info', views.store_info),
-    path('modify_info', views.modify_info)
+    path('modify_info', views.modify_info),
+    path('respond_list', views.respond_list)
 ]
