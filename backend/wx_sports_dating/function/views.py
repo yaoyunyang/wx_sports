@@ -234,17 +234,14 @@ def respond_list(request):
         invitations = models.Invitation.objects.filter(gym_id_gym_id=p_key)
         for invitation in invitations:
             invitation_dic = {}
-            invitation_dic['id'] = invitation.id_invitation
+            invitation_dic['invitation_id'] = invitation.id_invitation
             invitation_dic['sports_type'] = invitation.sports_type
-            # invitation_dic['deadline'] = invitation.deadline
             invitation_dic['begin_time'] = invitation.begin_time
-            # invitation_dic['end_time'] = invitation.end_time
-            # invitation_dic['brif_introduction'] = invitation.brif_introduction
             invitation_dic['max_responsed'] = invitation.max_responsed
-            # invitation_dic['state'] = invitation.state
-            # invitation_dic['inviter_state'] = invitation.inviter_state
             inviter_name = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().name
             invitation_dic['inviter_name'] = inviter_name
+            has_respond = len(invitation.invitation.all())
+            invitation_dic['has_respond'] = has_respond
             invitations_list.append(invitation_dic)
         response_data['invitation_list'] = invitations_list
         response_data['status_code'] = 200
