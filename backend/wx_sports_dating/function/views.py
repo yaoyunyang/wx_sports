@@ -155,8 +155,10 @@ def login(request):
     url = 'https://api.weixin.qq.com/sns/jscode2session'
     # 需要更改为前端的appid 和 secret
     params = {
-        'appid': 'wxe9e1e6704355a9ac',
-        'secret': 'bcd537cb2b62e735d3c7f50dc6deb953',
+        # 'appid': 'wxe9e1e6704355a9ac',
+        # 'secret': 'bcd537cb2b62e735d3c7f50dc6deb953',
+        'appid': 'wx3c4f0e9741bd04e6',
+        'secret': '7c6cfe909fc235de31e68f5584a9c44b',
         'js_code': js_code,
         'grant_type': 'authorization_code'
     }

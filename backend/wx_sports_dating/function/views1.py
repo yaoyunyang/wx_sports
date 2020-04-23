@@ -7,8 +7,8 @@ from . import models
 def get_account_info(request):
     response = {}
     try:
-        hash_id = request.GET.get('session_key')
-        models.Login.objects.filter(hash_id=hash_id).last().open_id
+        hash_id = request.GET.get('hash_session')
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         account = models.Account.objects.filter(open_id=open_id).first()
         response['list'] = json.loads(serializers.serialize("json", account))
         response['status'] = 200
@@ -22,8 +22,8 @@ def get_account_info(request):
 def get_notice(request):
     response = {}
     try:
-        hash_id = request.GET.get('session_key')
-        models.Login.objects.filter(hash_id=hash_id).last().open_id
+        hash_id = request.GET.get('hash_session')
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         account = models.Account.objects.filter(open_id=open_id).first()
         my_invitation = models.Invitation.objects.filter(inviter_open_id=open_id)
         invite_me = models.Invitation.objects.filter(invitation__account_id_account=account)
