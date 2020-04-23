@@ -41,9 +41,10 @@ def release_invitation(request):
 
         invite_list = data['selected_id']
         for invited in invite_list.split():
+            account = models.Account.objects.get(id_account=int(invited))
             respond = models.Responder(
-                invitation_id_invitation=invitation_id,
-                account_id_account=int(invited),
+                invitation_id_invitation=invitation,
+                account_id_account=account,
                 state=0
             )
             respond.save()
