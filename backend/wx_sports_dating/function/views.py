@@ -47,15 +47,22 @@ def release_invitation(request):
 
 
 def get_my_follows(request):
-    data = json.loads(request.body)
-    open_id = data['open_id']
-    followed_list = models.Follow.objects.filter(follower_open_id=open_id)
-    response_data = []
-    for e in followed_list:
-        id_account = e.followed_id
-        account_info = list(models.Account.objects.filter(id_account=id_account).values())
-        response_data.extend(account_info)
-    print(response_data)
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        followed_list = models.Follow.objects.filter(follower_open_id=open_id)
+        follows = []
+        for e in followed_list:
+            id_account = e.followed_id
+            account_info = list(models.Account.objects.filter(id_account=id_account).values())
+            follows.extend(account_info)
+        response_data['followed_list'] = follows
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
     return JsonResponse(response_data, safe=False)
 
 
