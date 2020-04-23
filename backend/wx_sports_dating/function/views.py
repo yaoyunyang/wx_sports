@@ -38,6 +38,15 @@ def release_invitation(request):
         # 获取用户刚才创建的邀请ID， 即该用户的最新一条邀请
         invitation_id = models.Invitation.objects.filter(inviter_open_id=inviter_open_id).last().id_invitation
         response_data['invitation_id'] = invitation_id
+
+        invite_list = data['selected_id']
+        for invited in invite_list.split():
+            respond = models.Responder(
+                invitation_id_invitation=invitation_id,
+                account_id_account=int(invited),
+                state=0
+            )
+            respond.save()
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)
