@@ -56,14 +56,16 @@ def get_my_follows(request):
         follows = []
         for e in followed_list:
             id_account = e.followed_id
-            account_info = list(models.Account.objects.filter(id_account=id_account).values())
-            follows.extend(account_info)
+            follow_one = {}
+            follow_one['name'] = models.Account.objects.filter(id_account=id_account).get().name
+            follow_one['id'] = models.Account.objects.filter(id_account=id_account).get().id_account
+            follows.append(follow_one)
         response_data['followed_list'] = follows
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
-    return JsonResponse(response_data, safe=False)
+    return JsonResponse(response_data)
 
 
 def evaluate_gym(request):
