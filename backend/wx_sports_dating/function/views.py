@@ -69,6 +69,7 @@ def get_my_follows(request):
             follow_one = {}
             follow_one['name'] = models.Account.objects.filter(id_account=id_account).get().name
             follow_one['id'] = models.Account.objects.filter(id_account=id_account).get().id_account
+            follow_one['avatar'] = models.Account.objects.filter(id_account=id_account).get().avatar
             follows.append(follow_one)
         response_data['followed_list'] = follows
         response_data['status_code'] = 200
@@ -197,18 +198,21 @@ def store_info(request):
         hash_id = data['hash_session']
         name = data['name']
         gender = data['gender']
+        avatar = data['avatar']
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         is_exist = models.Account.objects.filter(open_id=open_id)
         if is_exist:
             account = models.Account.objects.get(open_id=open_id)
             account.name = name
             account.gender = gender
+            account.avatar = avatar
             account.save()
         else:
             account = models.Account(
                 open_id=open_id,
                 name=name,
                 gender=gender,
+                avatar=avatar
             )
             account.save()
         response_data['name'] = account.name
@@ -217,6 +221,7 @@ def store_info(request):
         response_data['age'] = account.age
         response_data['favor_sports'] = account.favor_sports
         response_data['state'] = account.state
+        response_data['avatar'] = account.avatar
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)

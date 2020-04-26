@@ -12,6 +12,7 @@ class Account(models.Model):
     profile = models.CharField(max_length=255, blank=True)
     state = models.IntegerField(default=0)
     favor_sports = models.CharField(max_length=50, default='')
+    avatar = models.CharField(max_length=255, default='')
 
 
 class Invitation(models.Model):
