@@ -4,6 +4,9 @@ import json, requests
 from . import models
 import time
 import hashlib
+from django.db.models import Q
+
+
 # Create your views here.
 
 
@@ -282,8 +285,8 @@ def get_invite_detail(request):
     response_data = {}
     try:
         data = json.loads(request.body)
-        invtation_id = data['invtation_id']
-        invitation = models.Invitation.objects.get(id_invitation=invtation_id)
+        invitation_id = data['invitation_id']
+        invitation = models.Invitation.objects.get(id_invitation=invitation_id)
         invitation_dic = {}
         invited_list = []
         invited_one = {}
@@ -331,6 +334,89 @@ def get_follows_list(request):
             follow_list.append(follow_info)
         response_data['follow_list'] = follow_list
         response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
+
+
+def respond_invitation(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        invitation_id = data['invitation_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.filter(open_id=open_id).get().id_account
+        invitation = models.Invitation.objects.filter(id_invitation=invitation_id).get()
+        account = models.Account.objects.filter(open_id=open_id).get()
+        has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
+                                                      account_id_account=account_id)
+        if has_respond:
+            response = is_respond.get()
+            response.state = 1
+            response.save()
+        else:
+            respond = models.Responder(
+                invitation_id_invitation=invitation,
+                account_id_account=account,
+                state=1
+            )
+            respond.save()
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
+
+
+def is_respond(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        invitation_id = data['invitation_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.filter(open_id=open_id).get().id_account
+        invitation = models.Invitation.objects.filter(id_invitation=invitation_id).get()
+        has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
+                                                      account_id_account=account_id)
+        if has_respond:
+            state = has_respond.get().state
+            if state == 1:
+                response_data['has_respond'] = 1
+            else:
+                response_data['has_respond'] = 0
+        else:
+            response_data['has_respond'] = 0
+        has_respond_num = models.Responder.objects.filter(invitation_id_invitation=invitation_id).count()
+        if has_respond_num < invitation.max_responsed:
+            response_data['has_max'] = 0
+        else:
+            response_data['has_max'] = 1
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
+
+
+def cancel_respond(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        invitation_id = data['invitation_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.filter(open_id=open_id).get().id_account
+        is_delete = models.Responder.objects.get(invitation_id_invitation=invitation_id,
+                                                 account_id_account=account_id).delete()
+        if is_delete == 1:
+            response_data['status_code'] = 200
+            response_data['msg'] = '取消成功'
+        else:
+            response_data['status_code'] = 200
+            response_data['msg'] = '取消失败'
     except Exception as exception:
         response_data['status_code'] = 501
         response_data['msg'] = str(exception)

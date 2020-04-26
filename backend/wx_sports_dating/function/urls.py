@@ -16,5 +16,8 @@ urlpatterns = [
     path('modify_info', views.modify_info),
     path('respond_list', views.respond_list),
     path('get_invite_detail', views.get_invite_detail),
-    path('get_follows_list', views.get_follows_list)
+    path('get_follows_list', views.get_follows_list),
+    path('respond_invitation', views.respond_invitation),
+    path('is_respond', views.is_respond),
+    path('cancel_respond', views.cancel_respond)
 ]
