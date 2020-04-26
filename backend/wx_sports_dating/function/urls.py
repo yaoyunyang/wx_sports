@@ -15,5 +15,6 @@ urlpatterns = [
     path('store_info', views.store_info),
     path('modify_info', views.modify_info),
     path('respond_list', views.respond_list),
-    path('get_invite_detail', views.get_invite_detail)
+    path('get_invite_detail', views.get_invite_detail),
+    path('get_follows_list', views.get_follows_list)
 ]

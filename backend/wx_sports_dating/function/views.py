@@ -310,3 +310,28 @@ def get_invite_detail(request):
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
     return JsonResponse(response_data)
+
+
+def get_follows_list(request):
+    follow_list = []
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        followed_list = models.Follow.objects.filter(follower_open_id=open_id)
+        for follow_one in followed_list:
+            id_account = follow_one.followed_id
+            follow_info = {'name': models.Account.objects.filter(id_account=id_account).get().name,
+                           'avatar': models.Account.objects.filter(id_account=id_account).get().avatar,
+                           'profile': models.Account.objects.filter(id_account=id_account).get().profile,
+                           'age': models.Account.objects.filter(id_account=id_account).get().age,
+                           'id': models.Account.objects.filter(id_account=id_account).get().id_account,
+                           'state': models.Account.objects.filter(id_account=id_account).get().state}
+            follow_list.append(follow_info)
+        response_data['follow_list'] = follow_list
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
