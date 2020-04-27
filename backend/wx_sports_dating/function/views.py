@@ -472,3 +472,22 @@ def delete_friends(request):
         response_data['msg'] = str(exception)
         response_data['data'] = 501
     return JsonResponse(response_data)
+
+
+def is_sponsor(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        invitation_id = data['invitation_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        invitation = models.Invitation.objects.get(id_invitation=invitation_id)
+        if invitation.inviter_open_id == open_id:
+            response_data['is_sponsor'] = 1
+        else:
+            response_data['is_sponsor'] = 0
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
