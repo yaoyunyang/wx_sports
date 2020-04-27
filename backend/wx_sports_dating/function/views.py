@@ -4,6 +4,7 @@ import json, requests
 from . import models
 import time
 import hashlib
+from math import radians, cos, sin, asin, sqrt
 from django.db.models import Q
 
 
@@ -507,6 +508,86 @@ def delete_invitation(request):
         else:
             response_data['status_code'] = 201
             response_data['msg'] = '取消邀约失败'
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
+
+
+# Haversine(lon1, lat1, lon2, lat2)的参数代表：经度1，纬度1，经度2，纬度2（十进制度数）
+def Haversine(lon1, lat1, lon2, lat2):
+    # 将十进制度数转化为弧度
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # Haversine公式
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # 地球平均半径，单位为公里
+    d = c * r * 1000
+    return d
+
+
+def clock_in(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account = models.Account.objects.filter(open_id=open_id).get()
+        invitation_id = data['invitation_id']
+        invitation = models.Invitation.objects.filter(id_invitation=invitation_id).get()
+        gym_id = data['gym_id']
+        longitude = int(data['longitude'])
+        latitude = int(data['latitude'])
+        gym = models.Gym.objects.get(id_gym=gym_id)
+        gym_longitude = int(gym.longitude)
+        gym_latitude = int(gym.latitude)
+        distance = Haversine(longitude, latitude, gym_longitude, gym_latitude)
+        if distance < 200:
+            is_invited = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
+                                                         account_id_account=account.id_account).get()
+            if is_invited:
+                is_invited.state = 1
+                is_invited.save()
+            else:
+                response = models.Responder(
+                    state=1,
+                    account_id_account=account,
+                    invitation_id_invitation=invitation
+                )
+                response.save()
+            response_data['status_code'] = 200
+            response_data['msg'] = "打卡成功"
+        else:
+            response_data['status_code'] = 201
+            response_data['msg'] = "不在场馆200米范围内"
+        response_data['distance'] = distance
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
+
+
+def is_clock_in(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.filter(open_id=open_id).get().id_account
+        invitation_id = data['invitation_id']
+        response = models.Responder.objects.filter(account_id_account=account_id,
+                                                   invitation_id_invitation=invitation_id)
+        if response:
+            if response.get().state == 1:
+                response_data['is_clock_in'] = 1
+            elif response.get().state == 0:
+                response_data['is_clock_in'] = 0
+            response_data['status_code'] = 200
+        else:
+            response_data['status_code'] = 201
+            response_data['msg'] = "该用户未响应邀约"
     except Exception as exception:
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
