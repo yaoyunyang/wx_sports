@@ -422,3 +422,32 @@ def cancel_respond(request):
         response_data['status_code'] = 501
         response_data['msg'] = str(exception)
     return JsonResponse(response_data)
+
+
+def add_friends(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        followed_account_id = data['followed_account_id']
+        hash_id = data['hash_session']
+        followed_account = models.Account.objects.filter(id_account=followed_account_id).get()
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        follower_account = models.Account.objects.filter(open_id=open_id).get()
+        is_follow = models.Follow.objects.filter(followed_id=followed_account, follower_open_id=open_id)
+        if is_follow:
+            response_data['status_code'] = 201
+            response_data['msg'] = 'has followed'
+        else:
+            follow = models.Follow(
+                invite_num=0,
+                follower_open_id=open_id,
+                followed_open_id=followed_account.open_id,
+                follower=follower_account,
+                followed=followed_account
+            )
+            follow.save()
+            response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
