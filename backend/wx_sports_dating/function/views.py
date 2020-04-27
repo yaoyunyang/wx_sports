@@ -412,11 +412,11 @@ def cancel_respond(request):
         account_id = models.Account.objects.filter(open_id=open_id).get().id_account
         is_delete = models.Responder.objects.get(invitation_id_invitation=invitation_id,
                                                  account_id_account=account_id).delete()
-        if is_delete == 1:
+        if is_delete[0] == 1:
             response_data['status_code'] = 200
             response_data['msg'] = '取消成功'
         else:
-            response_data['status_code'] = 200
+            response_data['status_code'] = 201
             response_data['msg'] = '取消失败'
     except Exception as exception:
         response_data['status_code'] = 501
@@ -450,4 +450,25 @@ def add_friends(request):
     except Exception as exception:
         response_data['status_code'] = 501
         response_data['msg'] = str(exception)
+    return JsonResponse(response_data)
+
+
+def delete_friends(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        followed_account_id = data['followed_account_id']
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        followed_account = models.Account.objects.filter(id_account=followed_account_id).get()
+        is_delete = models.Follow.objects.get(followed_id=followed_account, follower_open_id=open_id).delete()
+        if is_delete[0] == 1:
+            response_data['status_code'] = 200
+            response_data['msg'] = '取消成功'
+        else:
+            response_data['status_code'] = 201
+            response_data['msg'] = '取消失败'
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['data'] = 501
     return JsonResponse(response_data)
