@@ -23,5 +23,7 @@ urlpatterns = [
     path('add_friends', views.add_friends),
     path('delete_friends', views.delete_friends),
     path('is_sponsor', views.is_sponsor),
-    path('delete_invitation', views.delete_invitation)
+    path('delete_invitation', views.delete_invitation),
+    path('clock_in', views.clock_in),
+    path('is_clock_in', views.is_clock_in)
 ]
