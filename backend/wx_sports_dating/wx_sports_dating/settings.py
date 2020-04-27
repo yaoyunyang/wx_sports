@@ -75,16 +75,16 @@ WSGI_APPLICATION = 'wx_sports_dating.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'jieni',
-        # 'USER': 'root',
-        # 'PASSWORD': '',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '3306'
-        'NAME': 'yyy_database',
-        'USER': 'yyy',
-        'PASSWORD': 'sanwai1222',
+        'NAME': 'jieni',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306'
+        # 'NAME': 'yyy_database',
+        # 'USER': 'yyy',
+        # 'PASSWORD': 'sanwai1222',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '3306'
     }
 }
 
