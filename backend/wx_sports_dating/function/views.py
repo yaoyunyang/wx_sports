@@ -330,7 +330,8 @@ def get_follows_list(request):
                            'profile': models.Account.objects.filter(id_account=id_account).get().profile,
                            'age': models.Account.objects.filter(id_account=id_account).get().age,
                            'id': models.Account.objects.filter(id_account=id_account).get().id_account,
-                           'state': models.Account.objects.filter(id_account=id_account).get().state}
+                           'state': models.Account.objects.filter(id_account=id_account).get().state,
+                           'favor_sports': models.Account.objects.filter(id_account=id_account).get().favor_sports}
             follow_list.append(follow_info)
         response_data['follow_list'] = follow_list
         response_data['status_code'] = 200
