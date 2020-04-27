@@ -289,7 +289,6 @@ def get_invite_detail(request):
         invitation = models.Invitation.objects.get(id_invitation=invitation_id)
         invitation_dic = {}
         invited_list = []
-        invited_one = {}
         invitation_dic['state'] = invitation.state
         invitation_dic['sports_type'] = invitation.sports_type
         invitation_dic['inviter_state'] = invitation.inviter_state
@@ -302,6 +301,7 @@ def get_invite_detail(request):
         invitation_dic['inviter_name'] = inviter_name
         has_respond = len(invitation.invitation.all())
         for item in invitation.invitation.all():
+            invited_one = {}
             account = models.Account.objects.filter(id_account=item.account_id_account_id).get()
             invited_one['name'] = account.name
             invited_list.append(invited_one)
