@@ -22,5 +22,6 @@ urlpatterns = [
     path('cancel_respond', views.cancel_respond),
     path('add_friends', views.add_friends),
     path('delete_friends', views.delete_friends),
-    path('is_sponsor', views.is_sponsor)
+    path('is_sponsor', views.is_sponsor),
+    path('delete_invitation', views.delete_invitation)
 ]

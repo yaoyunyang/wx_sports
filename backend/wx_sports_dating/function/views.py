@@ -491,3 +491,23 @@ def is_sponsor(request):
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
     return JsonResponse(response_data)
+
+
+def delete_invitation(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        invitation_id = data['invitation_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        is_delete = models.Invitation.objects.get(id_invitation=invitation_id, inviter_open_id=open_id).delete()
+        if is_delete[0] == 1:
+            response_data['status_code'] = 200
+            response_data['msg'] = '取消邀约成功'
+        else:
+            response_data['status_code'] = 201
+            response_data['msg'] = '取消邀约失败'
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
