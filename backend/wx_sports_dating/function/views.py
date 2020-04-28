@@ -592,3 +592,23 @@ def is_clock_in(request):
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
     return JsonResponse(response_data)
+
+
+def get_current_clock_in(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.filter(open_id=open_id).get().id_account
+        response = models.Responder.objects.filter(account_id_account=account_id, state=1)
+        if response:
+            response_data['has_clock_in'] = 1
+            response_data['invitation_id'] = response.get().invitation_id_invitation.id_invitation
+        else:
+            response_data['has_clock_in'] = 0
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
