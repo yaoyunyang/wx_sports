@@ -353,19 +353,24 @@ def respond_invitation(request):
         account_id = models.Account.objects.filter(open_id=open_id).get().id_account
         invitation = models.Invitation.objects.filter(id_invitation=invitation_id).get()
         account = models.Account.objects.filter(open_id=open_id).get()
-        has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
-                                                      account_id_account=account_id)
-        if has_respond:
-            response = is_respond.get()
-            response.state = 1
-            response.save()
+        has_one = models.Responder.objects.filter(account_id_account=account_id, state=1)
+        if has_one:
+            response_data['has_respond_one'] = 1
         else:
-            respond = models.Responder(
-                invitation_id_invitation=invitation,
-                account_id_account=account,
-                state=1
-            )
-            respond.save()
+            has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
+                                                          account_id_account=account_id)
+            if has_respond:
+                response = is_respond.get()
+                response.state = 1
+                response.save()
+            else:
+                respond = models.Responder(
+                    invitation_id_invitation=invitation,
+                    account_id_account=account,
+                    state=1
+                )
+                respond.save()
+            response_data['has_respond_one'] = 0
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['status_code'] = 501
@@ -549,11 +554,11 @@ def clock_in(request):
             is_invited = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
                                                          account_id_account=account.id_account).get()
             if is_invited:
-                is_invited.state = 1
+                is_invited.state = 2
                 is_invited.save()
             else:
                 response = models.Responder(
-                    state=1,
+                    state=2,
                     account_id_account=account,
                     invitation_id_invitation=invitation
                 )
@@ -581,9 +586,9 @@ def is_clock_in(request):
         response = models.Responder.objects.filter(account_id_account=account_id,
                                                    invitation_id_invitation=invitation_id)
         if response:
-            if response.get().state == 1:
+            if response.get().state == 2:
                 response_data['is_clock_in'] = 1
-            elif response.get().state == 0:
+            elif response.get().state == 1:
                 response_data['is_clock_in'] = 0
             response_data['status_code'] = 200
         else:
@@ -606,6 +611,7 @@ def get_current_clock_in(request):
         if response:
             response_data['has_clock_in'] = 1
             response_data['invitation_id'] = response.get().invitation_id_invitation.id_invitation
+            response_data['gym_name'] = response.get().invitation_id_invitation.gym_id_gym.name
         else:
             response_data['has_clock_in'] = 0
         response_data['status_code'] = 200
