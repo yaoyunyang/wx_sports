@@ -305,6 +305,7 @@ def get_invite_detail(request):
             invited_one = {}
             account = models.Account.objects.filter(id_account=item.account_id_account_id).get()
             invited_one['name'] = account.name
+            invited_one['account_id'] = account.id_account
             invited_list.append(invited_one)
         invitation_dic['has_respond'] = has_respond
         invitation_dic['invited_list'] = invited_list
