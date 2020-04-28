@@ -23,6 +23,7 @@ def release_invitation(request):
         brif_introduction = data['brif_introduction']
         hash_id = data['hash_session']
         inviter_open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        inviter_account = models.Account.objects.get(open_id=inviter_open_id)
         gym_id_gym_id = models.Gym.objects.get(id_gym=data['id_gym'])
         inviter_id_account_id = models.Account.objects.get(open_id=inviter_open_id)
 
@@ -52,6 +53,13 @@ def release_invitation(request):
                 state=0
             )
             respond.save()
+
+        response = models.Responder(
+            invitation_id_invitation=invitation,
+            account_id_account=inviter_account,
+            state=0
+        )
+        response.save()
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)
@@ -612,6 +620,7 @@ def get_current_clock_in(request):
             response_data['has_clock_in'] = 1
             response_data['invitation_id'] = response.get().invitation_id_invitation.id_invitation
             response_data['gym_name'] = response.get().invitation_id_invitation.gym_id_gym.name
+            response_data['gym_id'] = response.get().invitation_id_invitation.gym_id_gym.id_gym
         else:
             response_data['has_clock_in'] = 0
         response_data['status_code'] = 200
