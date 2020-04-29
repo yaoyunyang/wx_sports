@@ -1,6 +1,5 @@
 from . import models
 import time
-from django.core.cache import cache
 
 
 def out_time_delete():
