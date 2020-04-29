@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'function'
 ]
 
@@ -75,16 +76,16 @@ WSGI_APPLICATION = 'wx_sports_dating.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'jieni',
-        # 'USER': 'root',
-        # 'PASSWORD': '',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '3306'
-        'NAME': 'yyy_database',
-        'USER': 'yyy',
-        'PASSWORD': 'sanwai1222',
+        'NAME': 'jieni',
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306'
+        # 'NAME': 'yyy_database',
+        # 'USER': 'yyy',
+        # 'PASSWORD': 'sanwai1222',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '3306'
     }
 }
 
@@ -117,9 +118,13 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRONJOBS = [
+    ('*/1 * * * *', 'function.crontab.out_time_delete', '>>/root/jienijieniBackend/backend/wx_sports_dating/log')
+]
