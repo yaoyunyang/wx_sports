@@ -54,6 +54,7 @@ class Message(models.Model):
     receiver_id = models.CharField(max_length=50)
     sender_id = models.CharField(max_length=50)
     title = models.CharField(max_length=50, default="[系统通知]")
+    invitation_id = models.IntegerField(default=0)
 
 
 class GymComment(models.Model):
