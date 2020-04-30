@@ -154,16 +154,18 @@ def gym_is_exist(request):
             )
             gym.save()
         gym = models.Gym.objects.filter(longitude=longitude, latitude=latitude).last()
-        response_data['p_key'] = gym.id_gym
-        response_data['name'] = gym.name
-        response_data['heat'] = gym.heat
-        response_data['charge'] = gym.charge
-        response_data['peak_time'] = gym.peak_time
-        response_data['time'] = gym.time
-        response_data['brief_introduction'] = gym.brief_introduction
-        response_data['address'] = gym.address
-        response_data['count_invitations'] = gym.count_invitation
-        response_data['count_responders'] = gym.count_responder
+        gym_info = {}
+        gym_info['p_key'] = gym.id_gym
+        gym_info['name'] = gym.name
+        gym_info['heat'] = gym.heat
+        gym_info['charge'] = gym.charge
+        gym_info['peak_time'] = gym.peak_time
+        gym_info['time'] = gym.time
+        gym_info['brief_introduction'] = gym.brief_introduction
+        gym_info['address'] = gym.address
+        gym_info['count_invitations'] = gym.count_invitation
+        gym_info['count_responders'] = gym.count_responder
+        response_data['gym_info'] = gym_info
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)
