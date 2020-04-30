@@ -42,6 +42,7 @@ class Gym(models.Model):
     brief_introduction = models.CharField(max_length=225, default="")
     count_invitation = models.IntegerField(default=0)
     count_responder = models.IntegerField(default=0)
+    address = models.CharField(max_length=255, default='')
 
 
 class Message(models.Model):
