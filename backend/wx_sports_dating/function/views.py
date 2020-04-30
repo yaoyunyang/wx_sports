@@ -137,29 +137,37 @@ def send_message(request):
 
 
 def gym_is_exist(request):
-    data = json.loads(request.body)
-    longitude = data['longitude']
-    latitude = data['latitude']
-    is_exist = models.Gym.objects.filter(longitude=longitude, latitude=latitude)
-    if is_exist:
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        longitude = data['longitude']
+        latitude = data['latitude']
+        name = data['name']
+        address = data['address']
+        is_exist = models.Gym.objects.filter(longitude=longitude, latitude=latitude)
+        if not is_exist:
+            gym = models.Gym(
+                name=name,
+                address=address,
+                latitude=latitude,
+                longitude=longitude
+            )
+            gym.save()
         gym = models.Gym.objects.filter(longitude=longitude, latitude=latitude).last()
-        response_data = {
-            "status_code": 200,
-            "gym_info": {
-                "p_key": gym.id_gym,
-                "name": gym.name,
-                "heat": gym.heat,
-                "charge": gym.charge,
-                "peak_time": gym.peak_time,
-                "time": gym.time,
-                "brief_introduction": gym.brief_introduction
-            }
-        }
-    else:
-        status_code = 501
-        response_data = {
-            "status_code": status_code
-        }
+        response_data['p_key'] = gym.id_gym
+        response_data['name'] = gym.name
+        response_data['heat'] = gym.heat
+        response_data['charge'] = gym.charge
+        response_data['peak_time'] = gym.peak_time
+        response_data['time'] = gym.time
+        response_data['brief_introduction'] = gym.brief_introduction
+        response_data['address'] = gym.address
+        response_data['count_invitations'] = gym.count_invitation
+        response_data['count_responders'] = gym.count_responder
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
 
     return JsonResponse(response_data)
 

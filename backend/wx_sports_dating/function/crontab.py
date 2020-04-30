@@ -11,7 +11,7 @@ def out_time_delete():
             print(datetime, ': delete the invitation ', item.id_invitation)
         out_time.delete()
     else:
-        print(datetime, ': ======no out of date invitation======')
+        print(current_time, ': ======no out of date invitation======')
 
 
 def statistic():
