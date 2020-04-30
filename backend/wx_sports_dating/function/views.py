@@ -227,6 +227,7 @@ def store_info(request):
                 avatar=avatar
             )
             account.save()
+        response_data['id'] = account.id_account
         response_data['name'] = account.name
         response_data['gender'] = account.gender
         response_data['profile'] = account.profile

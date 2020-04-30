@@ -126,5 +126,8 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 CRONJOBS = [
-    ('*/1 * * * *', 'function.crontab.out_time_delete', '>>/root/jienijieniBackend/backend/wx_sports_dating/log')
+    ('*/1 * * * *', 'function.crontab.out_time_delete',
+     '>>/root/jienijieniBackend/backend/wx_sports_dating/out_time.log'),
+    ('0 0 * * *', 'function.crontab.statistic',
+     '>>/root/jienijieniBackend/backend/wx_sports_dating/statistic.log')
 ]
