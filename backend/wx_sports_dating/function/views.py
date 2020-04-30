@@ -25,10 +25,9 @@ def release_invitation(request):
         inviter_open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         inviter_account = models.Account.objects.get(open_id=inviter_open_id)
         gym_id_gym_id = models.Gym.objects.get(id_gym=data['id_gym'])
-        inviter_id_account_id = models.Account.objects.get(open_id=inviter_open_id)
 
         invitation = models.Invitation(
-            inviter_id_account=inviter_id_account_id,
+            inviter_id_account=inviter_account,
             gym_id_gym=gym_id_gym_id,
             sports_type=sports_type,
             deadline=deadline,
@@ -47,19 +46,20 @@ def release_invitation(request):
         invite_list = data['selected_id']
         for invited in invite_list.split():
             account = models.Account.objects.get(id_account=int(invited))
-            respond = models.Responder(
-                invitation_id_invitation=invitation,
-                account_id_account=account,
-                state=0
-            )
-            respond.save()
+            # respond = models.Responder(
+            #     invitation_id_invitation=invitation,
+            #     account_id_account=account,
+            #     state=0
+            # )
+            # respond.save()
+            send_message(invitation_id, account.id_account, inviter_account.id_account, 5)
 
-        response = models.Responder(
-            invitation_id_invitation=invitation,
-            account_id_account=inviter_account,
-            state=0
-        )
-        response.save()
+        # response = models.Responder(
+        #     invitation_id_invitation=invitation,
+        #     account_id_account=inviter_account,
+        #     state=0
+        # )
+        # response.save()
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['msg'] = str(exception)
@@ -109,31 +109,20 @@ def evaluate_gym(request):
     return JsonResponse(response_data)
 
 
-def send_message(request):
-    data = json.loads(request.body)
-    receiver_id = data['receiver_open_id']
-    content = data['content']
-    sender_id = data['sender_open_id']
-    state = data['state']
-    type = data['type']
-    title = data['title']
-    datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+def send_message(invitation_id, account_id, sender_id, msg_type):
+    datetime = time.strftime("%Y-%m-%d %H:%M", time.localtime()) + ":00"
 
     message = models.Message(
-        content=content,
+        content="您有一个新的邀约通知",
         datetime=datetime,
-        type=type,
-        state=state,
-        receiver_id=receiver_id,
+        type=msg_type,
+        state=0,
+        receiver_id=account_id,
         sender_id=sender_id,
-        title=title
+        title="[系统通知]",
+        invitation_id=invitation_id
     )
     message.save()
-    response_data = {
-        "status_code": 200
-    }
-
-    return JsonResponse(response_data)
 
 
 def gym_is_exist(request):
@@ -372,24 +361,24 @@ def respond_invitation(request):
         account_id = models.Account.objects.filter(open_id=open_id).get().id_account
         invitation = models.Invitation.objects.filter(id_invitation=invitation_id).get()
         account = models.Account.objects.filter(open_id=open_id).get()
-        has_one = models.Responder.objects.filter(account_id_account=account_id, state=1)
-        if has_one:
-            response_data['has_respond_one'] = 1
-        else:
-            has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
-                                                          account_id_account=account_id)
-            if has_respond:
-                response = is_respond.get()
-                response.state = 1
-                response.save()
-            else:
-                respond = models.Responder(
-                    invitation_id_invitation=invitation,
-                    account_id_account=account,
-                    state=1
-                )
-                respond.save()
-            response_data['has_respond_one'] = 0
+        # has_one = models.Responder.objects.filter(account_id_account=account_id, state=1)
+        # if has_one:
+        #     response_data['has_respond_one'] = 1
+        # else:
+        #     has_respond = models.Responder.objects.filter(invitation_id_invitation=invitation_id,
+        #                                                   account_id_account=account_id)
+        #     if has_respond:
+        #         response = is_respond.get()
+        #         response.state = 1
+        #         response.save()
+        #     else:
+        respond = models.Responder(
+            invitation_id_invitation=invitation,
+            account_id_account=account,
+            state=1
+        )
+        respond.save()
+        # response_data['has_respond_one'] = 0
         response_data['status_code'] = 200
     except Exception as exception:
         response_data['status_code'] = 501
