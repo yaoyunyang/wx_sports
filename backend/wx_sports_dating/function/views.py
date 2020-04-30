@@ -628,3 +628,22 @@ def get_current_clock_in(request):
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
     return JsonResponse(response_data)
+
+
+def is_follow(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        account_id = data['account_id']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        follow = models.Follow.objects.filter(follower_open_id=open_id, followed_id=account_id)
+        if follow:
+            response_data['is_follow'] = 1
+        else:
+            response_data['is_follow'] = 0
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)

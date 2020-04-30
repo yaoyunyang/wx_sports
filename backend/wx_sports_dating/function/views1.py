@@ -7,9 +7,8 @@ from . import models
 def get_account_info(request):
     response = {}
     try:
-        hash_id = request.GET.get('hash_session')
-        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
-        account = models.Account.objects.filter(open_id=open_id).first()
+        account_id = request.GET.get('account_id')
+        account = models.Account.objects.filter(id_account=account_id)
         response['list'] = json.loads(serializers.serialize("json", account))
         response['status'] = 200
     except Exception as exception:
