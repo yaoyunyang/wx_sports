@@ -99,7 +99,7 @@ def evaluate_gym(request):
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         account_id_account = models.Account.objects.get(open_id=open_id)
         comment = data['comment']
-        gym_id_gym = models.Gym.objects.get(id_gym=data['id_gym'])
+        gym_id_gym = models.Gym.objects.get(id_gym=data['gym_id'])
         gym_comment = models.GymComment(
             account_id_account=account_id_account,
             gym_id_gym=gym_id_gym,
@@ -290,7 +290,9 @@ def respond_list(request):
             invitation_dic['begin_time'] = invitation.begin_time
             invitation_dic['max_responsed'] = invitation.max_responsed
             inviter_name = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().name
+            inviter_avatar = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().avatar
             invitation_dic['inviter_name'] = inviter_name
+            invitation_dic['inviter_avatar'] = inviter_avatar
             has_respond = len(invitation.invitation.all())
             invitation_dic['has_respond'] = has_respond
             invitations_list.append(invitation_dic)
@@ -694,8 +696,7 @@ def get_msg(request):
         hash_id = data['hash_session']
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         account_id = models.Account.objects.get(open_id=open_id).id_account
-        msg_type = data['msg_type']
-        msgs = models.Message.objects.filter(receiver_id=account_id, type=msg_type)
+        msgs = models.Message.objects.filter(receiver_id=account_id)
         messages = []
         for msg in msgs:
             msg_dic = {}
