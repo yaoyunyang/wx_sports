@@ -27,5 +27,6 @@ urlpatterns = [
     path('clock_in', views.clock_in),
     path('is_clock_in', views.is_clock_in),
     path('get_current_clock_in', views.get_current_clock_in),
-    path('is_follow', views.is_follow)
+    path('is_follow', views.is_follow),
+    path('get_msg', views.get_msg)
 ]

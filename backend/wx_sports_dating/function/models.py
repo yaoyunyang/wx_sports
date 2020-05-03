@@ -51,8 +51,8 @@ class Message(models.Model):
     datetime = models.DateTimeField()
     type = models.IntegerField()
     state = models.IntegerField()
-    receiver_id = models.CharField(max_length=50)
-    sender_id = models.CharField(max_length=50)
+    receiver_id = models.IntegerField(default=0)
+    sender_id = models.IntegerField(default=0)
     title = models.CharField(max_length=50, default="[系统通知]")
     invitation_id = models.IntegerField(default=0)
 

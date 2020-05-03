@@ -52,7 +52,7 @@ def release_invitation(request):
             #     state=0
             # )
             # respond.save()
-            send_message(invitation_id, account.id_account, inviter_account.id_account, 5)
+            send_message(invitation_id, account.id_account, inviter_account.id_account, 5, "", "[系统通知] 您有一个新的邀约通知")
 
         # response = models.Responder(
         #     invitation_id_invitation=invitation,
@@ -92,34 +92,38 @@ def get_my_follows(request):
 
 
 def evaluate_gym(request):
-    data = json.loads(request.body)
-    open_id = data['open_id']
-    account_id_account = models.Account.objects.get(open_id=open_id)
-    comment = data['comment']
-    gym_id_gym = models.Gym.objects.get(id_gym=data['id_gym'])
-    gym_comment = models.GymComment(
-        account_id_account=account_id_account,
-        gym_id_gym=gym_id_gym,
-        comment=comment
-    )
-    gym_comment.save()
-    response_data = {
-        "status_code": 200
-    }
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id_account = models.Account.objects.get(open_id=open_id)
+        comment = data['comment']
+        gym_id_gym = models.Gym.objects.get(id_gym=data['id_gym'])
+        gym_comment = models.GymComment(
+            account_id_account=account_id_account,
+            gym_id_gym=gym_id_gym,
+            comment=comment
+        )
+        gym_comment.save()
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['status_code'] = 501
+        response_data['msg'] = str(exception)
     return JsonResponse(response_data)
 
 
-def send_message(invitation_id, account_id, sender_id, msg_type):
+def send_message(invitation_id, account_id, sender_id, msg_type, content, title):
     datetime = time.strftime("%Y-%m-%d %H:%M", time.localtime()) + ":00"
 
     message = models.Message(
-        content="您有一个新的邀约通知",
+        content=content,
         datetime=datetime,
         type=msg_type,
         state=0,
         receiver_id=account_id,
         sender_id=sender_id,
-        title="[系统通知]",
+        title=title,
         invitation_id=invitation_id
     )
     message.save()
@@ -143,9 +147,17 @@ def gym_is_exist(request):
             )
             gym.save()
         gym = models.Gym.objects.filter(longitude=longitude, latitude=latitude).last()
+        comments = models.GymComment.objects.filter(gym_id_gym=gym)
+        comment_list = []
+        for comment in comments:
+            comment_dic = {}
+            comment_dic['comment'] = comment.comment
+            comment_dic['commenter'] = comment.account_id_account.name
+            comment_list.append(comment_dic)
         gym_info = {}
         gym_info['p_key'] = gym.id_gym
         gym_info['name'] = gym.name
+        gym_info['comments'] = comment_list
         gym_info['heat'] = gym.heat
         gym_info['charge'] = gym.charge
         gym_info['peak_time'] = gym.peak_time
@@ -427,7 +439,7 @@ def cancel_respond(request):
         account_id = models.Account.objects.filter(open_id=open_id).get().id_account
         is_delete = models.Responder.objects.get(invitation_id_invitation=invitation_id,
                                                  account_id_account=account_id).delete()
-        if is_delete[0] == 1:
+        if is_delete[0] > 0:
             response_data['status_code'] = 200
             response_data['msg'] = '取消成功'
         else:
@@ -477,7 +489,7 @@ def delete_friends(request):
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         followed_account = models.Account.objects.filter(id_account=followed_account_id).get()
         is_delete = models.Follow.objects.get(followed_id=followed_account, follower_open_id=open_id).delete()
-        if is_delete[0] == 1:
+        if is_delete[0] > 0:
             response_data['status_code'] = 200
             response_data['msg'] = '取消成功'
         else:
@@ -508,6 +520,22 @@ def is_sponsor(request):
     return JsonResponse(response_data)
 
 
+def num_to_str(num):
+    sports = {
+        1: "跑步",
+        2: "游泳",
+        3: "足球",
+        4: "篮球",
+        5: "排球",
+        6: "乒乓球",
+        7: "羽毛球",
+        8: "网球",
+        9: "健身",
+        10: "其它"
+    }
+    return sports.get(num, None)
+
+
 def delete_invitation(request):
     response_data = {}
     try:
@@ -515,8 +543,18 @@ def delete_invitation(request):
         hash_id = data['hash_session']
         invitation_id = data['invitation_id']
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
-        is_delete = models.Invitation.objects.get(id_invitation=invitation_id, inviter_open_id=open_id).delete()
-        if is_delete[0] == 1:
+        account_id = models.Account.objects.get(open_id=open_id).id_account
+        responders = models.Responder.objects.filter(invitation_id_invitation=invitation_id)
+        invitation = models.Invitation.objects.get(id_invitation=invitation_id, inviter_open_id=open_id)
+        gym = models.Gym.objects.get(id_gym=invitation.gym_id_gym.id_gym)
+        for responder in responders:
+            if responder.account_id_account.id_account != account_id:
+                content = "您于" + str(invitation.begin_time) + "在" + gym.name + "的关于" + \
+                          num_to_str(invitation.sports_type) + "的邀约已被发起者解散。"
+                send_message(0, responder.account_id_account.id_account, account_id, 2, content,
+                             "[系统通知] 您有一个响应的邀约已被发起者解散")
+        is_delete = invitation.delete()
+        if is_delete[0] > 0:
             response_data['status_code'] = 200
             response_data['msg'] = '取消邀约成功'
         else:
@@ -647,3 +685,33 @@ def is_follow(request):
         response_data['msg'] = str(exception)
         response_data['status_code'] = 501
     return JsonResponse(response_data)
+
+
+def get_msg(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        account_id = models.Account.objects.get(open_id=open_id).id_account
+        msgs = models.Message.objects.filter(receiver_id=account_id)
+        messages = []
+        for msg in msgs:
+            msg_dic = {}
+            msg_dic['type'] = msg.type
+            msg_dic['title'] = msg.title
+            msg_dic['content'] = msg.content
+            msg_dic['invitation_id'] = msg.invitation_id
+            msg_dic['state'] = msg.state
+            msg_dic['time'] = msg.datetime
+            messages.append(msg_dic)
+        response_data['messages'] = messages
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
+
+
+
+
