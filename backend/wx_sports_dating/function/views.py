@@ -698,8 +698,7 @@ def get_msg(request):
         hash_id = data['hash_session']
         open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
         account_id = models.Account.objects.get(open_id=open_id).id_account
-        msg_type = data['msg_type']
-        msgs = models.Message.objects.filter(receiver_id=account_id, type=msg_type)
+        msgs = models.Message.objects.filter(receiver_id=account_id)
         messages = []
         for msg in msgs:
             msg_dic = {}
