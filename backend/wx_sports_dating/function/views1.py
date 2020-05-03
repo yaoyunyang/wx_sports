@@ -26,7 +26,7 @@ def get_notice(request):
         account = models.Account.objects.filter(open_id=open_id).first()
         my_invitation = models.Invitation.objects.filter(inviter_open_id=open_id)
         invite_me = models.Invitation.objects.filter(invitation__account_id_account=account)
-        message = models.Message.objects.filter(receiver_id=open_id)
+        message = models.Message.objects.filter(receiver_id=account.id_account)
         response['my_inv'] = json.loads(serializers.serialize("json", my_invitation))
         response['inv_me'] = json.loads(serializers.serialize("json", invite_me))
         response['message'] = json.loads(serializers.serialize("json", message))
