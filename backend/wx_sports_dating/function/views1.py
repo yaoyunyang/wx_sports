@@ -32,7 +32,7 @@ def get_notice(request):
         for invitation in my_respond:
             invitation.inviter_state = len(invitation.invitation.all())
         response['my_inv'] = json.loads(serializers.serialize("json", my_invitation))
-        response['inv_me'] = json.loads(serializers.serialize("json", invite_me))
+        response['my_respond'] = json.loads(serializers.serialize("json", my_respond))
         response['message'] = json.loads(serializers.serialize("json", message))
         response['status'] = 200
     except Exception as exception:
