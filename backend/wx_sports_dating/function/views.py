@@ -322,8 +322,10 @@ def get_invite_detail(request):
         invitation_dic['max_responsed'] = invitation.max_responsed
         inviter_name = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().name
         inviter_avatar = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().avatar
+        inviter_id = models.Account.objects.filter(open_id=invitation.inviter_open_id).get().id_account
         invitation_dic['inviter_name'] = inviter_name
         invitation_dic['inviter_avatar'] = inviter_avatar
+        invitation_dic['inviter_id'] = inviter_id
         has_respond = len(invitation.invitation.all())
         for item in invitation.invitation.all():
             invited_one = {}
