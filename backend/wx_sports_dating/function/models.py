@@ -8,7 +8,7 @@ class Account(models.Model):
     open_id = models.CharField(max_length=50)
     name = models.CharField(max_length=50)
     gender = models.IntegerField(default=0, blank=True)
-    age = models.IntegerField(default=0)
+    age = models.CharField(max_length=255, default='')
     profile = models.CharField(max_length=255, blank=True)
     state = models.IntegerField(default=0)
     favor_sports = models.CharField(max_length=50, default='')

@@ -720,5 +720,27 @@ def get_msg(request):
     return JsonResponse(response_data)
 
 
-
+def get_recent(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        hash_id = data['hash_session']
+        open_id = models.Login.objects.filter(hash_id=hash_id).last().open_id
+        all_data = models.Invitation.objects.filter(inviter_open_id=open_id)
+        gym_id_list = []
+        for item in all_data:
+            if item.gym_id_gym_id not in gym_id_list:
+                gym_id_list.append(item.gym_id_gym_id)
+        id_name = []
+        for gym_id in gym_id_list[-3:]:
+            info = {}
+            info['id'] = gym_id
+            info['name'] = models.Gym.objects.get(id_gym=gym_id).name
+            id_name.append(info)
+        response_data['recent_gym'] = id_name
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+    return JsonResponse(response_data)
 
