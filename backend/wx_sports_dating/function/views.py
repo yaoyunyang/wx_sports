@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import json, requests
 from . import models
-import time
+import time, datetime
 import hashlib
 from math import radians, cos, sin, asin, sqrt
 from django.db.models import Q
@@ -662,10 +662,22 @@ def get_current_clock_in(request):
         account_id = models.Account.objects.filter(open_id=open_id).get().id_account
         response = models.Responder.objects.filter(account_id_account=account_id, state=1)
         if response:
-            response_data['has_clock_in'] = 1
-            response_data['invitation_id'] = response.get().invitation_id_invitation.id_invitation
-            response_data['gym_name'] = response.get().invitation_id_invitation.gym_id_gym.name
-            response_data['gym_id'] = response.get().invitation_id_invitation.gym_id_gym.id_gym
+            invitation_id = response.get().invitation_id_invitation.id_invitation
+            gym_id = response.get().invitation_id_invitation.gym_id_gym.id_gym
+            last_year = (datetime.datetime.now() + datetime.timedelta(minutes=-14)).year
+            last_month = (datetime.datetime.now() + datetime.timedelta(minutes=-14)).month
+            last_date = (datetime.datetime.now() + datetime.timedelta(minutes=-14)).day
+            last_minute = (datetime.datetime.now() + datetime.timedelta(minutes=-14)).minute
+            last_hour = (datetime.datetime.now() + datetime.timedelta(minutes=-14)).hour
+            invitations = models.Invitation.objects.filter(
+                gym_id_gym=gym_id, begin_time__gt=datetime.datetime(last_year, last_month, last_date, last_hour, last_minute))
+            if invitations:
+                response_data['has_clock_in'] = 1
+                response_data['invitation_id'] = invitation_id
+                response_data['gym_name'] = response.get().invitation_id_invitation.gym_id_gym.name
+                response_data['gym_id'] = gym_id
+            else:
+                response_data['has_clock_in'] = 0
         else:
             response_data['has_clock_in'] = 0
         response_data['status_code'] = 200
