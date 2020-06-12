@@ -747,6 +747,8 @@ def get_recent(request):
         for gym_id in gym_id_list[-3:]:
             info = {}
             info['id'] = gym_id
+            info['longitude'] = models.Gym.objects.get(id_gym=gym_id).latitude
+            info['latitude'] = models.Gym.objects.get(id_gym=gym_id).longitude
             info['name'] = models.Gym.objects.get(id_gym=gym_id).name
             id_name.append(info)
         response_data['recent_gym'] = id_name
