@@ -758,3 +758,36 @@ def get_recent(request):
         response_data['status_code'] = 501
     return JsonResponse(response_data)
 
+
+def gym_detail(request):
+    response_data = {}
+    try:
+        data = json.loads(request.body)
+        gym_id = data['gym_id']
+        gym = models.Gym.objects.filter(id_gym=gym_id).last()
+        comments = models.GymComment.objects.filter(gym_id_gym=gym)
+        comment_list = []
+        for comment in comments:
+            comment_dic = {}
+            comment_dic['comment'] = comment.comment
+            comment_dic['commenter'] = comment.account_id_account.name
+            comment_list.append(comment_dic)
+        gym_info = {}
+        gym_info['p_key'] = gym.id_gym
+        gym_info['name'] = gym.name
+        gym_info['comments'] = comment_list
+        gym_info['heat'] = gym.heat
+        gym_info['charge'] = gym.charge
+        gym_info['peak_time'] = gym.peak_time
+        gym_info['time'] = gym.time
+        gym_info['brief_introduction'] = gym.brief_introduction
+        gym_info['address'] = gym.address
+        gym_info['count_invitations'] = gym.count_invitation
+        gym_info['count_responders'] = gym.count_responder
+        response_data['gym_info'] = gym_info
+        response_data['status_code'] = 200
+    except Exception as exception:
+        response_data['msg'] = str(exception)
+        response_data['status_code'] = 501
+
+    return JsonResponse(response_data)
